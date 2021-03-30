@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MusicLibraryWebAPI.Data;
+using MusicLibraryWebAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,40 +15,61 @@ namespace MusicLibraryWebAPI.Controllers
     public class MusicController : ControllerBase
     {
         private ApplicationDbContext _context;
+        private bool seedValue = false;
+
         public MusicController(ApplicationDbContext context)
         {
             _context = context;
+            if (seedValue)
+            {
+                Song temp = new Song() { Title = "Something", Artist = "Popular Artist", Album = "Some Album", ReleaseDate = DateTime.Today };
+                _context.Add(temp);
+                _context.SaveChanges();
+            }
+
         }
         // GET: api/<MusicController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IActionResult Get()
         {
-            return new string[] { "value1", "value2" };
+            return Ok();
         }
 
         // GET api/<MusicController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult Get(int id)
         {
-            return "value";
+            return Ok(new {Id = "value", AnotherValue = "something else"});
         }
 
         // POST api/<MusicController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult Post([FromBody] Song song)
         {
+            try
+            {
+                _context.Add(song);
+                _context.SaveChanges();
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest();
+            }
         }
 
         // PUT api/<MusicController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult Put(int id, [FromBody] Song song)
         {
+            return NotFound();
         }
 
         // DELETE api/<MusicController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            return NotFound();
         }
     }
 }
