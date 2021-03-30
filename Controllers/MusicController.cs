@@ -120,7 +120,7 @@ namespace MusicLibraryWebAPI.Controllers
                 {
                     Song copyOfSong = new Song { Id = songToDelete.Id, Album = songToDelete.Album, Artist = songToDelete.Artist, Title = songToDelete.Title };
                     _context.Remove(songToDelete);
-                   _context.SaveChanges();
+                    _context.SaveChanges();
                     return StatusCode(200, copyOfSong);
                 }
                 else
