@@ -47,7 +47,22 @@ namespace MusicLibraryWebAPI.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            return Ok(new {Id = "value", AnotherValue = "something else"});
+            try
+            {
+                var song = _context.Songs.Where(s => s.Id == id).FirstOrDefault();
+                if (song == null)
+                {
+                    return StatusCode(400);
+                }
+                else
+                {
+                    return Ok(song);
+                }
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
         }
 
         // POST api/<MusicController>
