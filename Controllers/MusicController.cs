@@ -113,7 +113,25 @@ namespace MusicLibraryWebAPI.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            return NotFound();
+            try
+            {
+                var songToDelete = _context.Songs.Where(s => s.Id == id).FirstOrDefault();
+                if (songToDelete != null)
+                {
+                    Song copyOfSong = new Song { Id = songToDelete.Id, Album = songToDelete.Album, Artist = songToDelete.Artist, Title = songToDelete.Title };
+                    _context.Remove(songToDelete);
+                   _context.SaveChanges();
+                    return StatusCode(200, copyOfSong);
+                }
+                else
+                {
+                    return StatusCode(400);
+                }
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
         }
     }
 }
