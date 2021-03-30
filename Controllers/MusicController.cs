@@ -73,7 +73,7 @@ namespace MusicLibraryWebAPI.Controllers
             {
                 _context.Add(song);
                 _context.SaveChanges();
-                return StatusCode(201);
+                return StatusCode(201, song);
             }
             catch
             {
@@ -85,7 +85,28 @@ namespace MusicLibraryWebAPI.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Song song)
         {
-            return NotFound();
+            try
+            {
+                var songInDb = _context.Songs.Where(s => s.Id == id).FirstOrDefault();
+                if (songInDb == null)
+                {
+                    return BadRequest();
+                }
+                else
+                {
+                    songInDb.Album = song.Album;
+                    songInDb.Title = song.Title;
+                    songInDb.ReleaseDate = song.ReleaseDate;
+                    songInDb.Artist = song.Artist;
+                    _context.Update(songInDb);
+                    _context.SaveChanges();
+                    return StatusCode(200, song);
+                }
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
         }
 
         // DELETE api/<MusicController>/5
