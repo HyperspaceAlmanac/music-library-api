@@ -73,7 +73,7 @@ namespace MusicLibraryWebAPI.Controllers
             {
                 _context.Add(song);
                 _context.SaveChanges();
-                return Ok();
+                return StatusCode(201);
             }
             catch
             {
