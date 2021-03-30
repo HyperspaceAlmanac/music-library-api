@@ -32,7 +32,15 @@ namespace MusicLibraryWebAPI.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok();
+            try
+            {
+                var songs = _context.Songs.Select(s => s);
+                return Ok(songs);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
         }
 
         // GET api/<MusicController>/5
