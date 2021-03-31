@@ -34,7 +34,7 @@ namespace MusicLibraryWebAPI.Controllers
         {
             try
             {
-                var songs = _context.Songs.Select(s => s);
+                var songs = _context.Songs.Select(s => new SongDTO() { Id = s.Id, Title = s.Title, Artist = s.Artist, Album = s.Album, ReleaseDate = s.ReleaseDate, Likes = s.Likes});
                 return Ok(songs);
             }
             catch
@@ -49,7 +49,9 @@ namespace MusicLibraryWebAPI.Controllers
         {
             try
             {
-                var song = _context.Songs.Where(s => s.Id == id).FirstOrDefault();
+                var song = _context.Songs.Where(s => s.Id == id)
+                    .Select(s => new SongDTO() { Id = s.Id, Title = s.Title, Artist = s.Artist, Album = s.Album, ReleaseDate = s.ReleaseDate, Likes = s.Likes })
+                    .FirstOrDefault();
                 if (song == null)
                 {
                     return StatusCode(400);
@@ -67,12 +69,16 @@ namespace MusicLibraryWebAPI.Controllers
 
         // POST api/<MusicController>
         [HttpPost]
-        public IActionResult Post([FromBody] Song song)
+        public IActionResult Post([FromBody] SongDTO song)
         {
             try
             {
-                _context.Add(song);
+                Song newSong = new Song() {Title = song.Title, Album = song.Album, Artist = song.Artist, ReleaseDate = song.ReleaseDate };
+                newSong.Likes = 0;
+                _context.Add(newSong);
                 _context.SaveChanges();
+                song.Id = newSong.Id;
+                song.Likes = 0;
                 return StatusCode(201, song);
             }
             catch
@@ -83,7 +89,7 @@ namespace MusicLibraryWebAPI.Controllers
 
         // PUT api/<MusicController>/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Song song)
+        public IActionResult Put(int id, [FromBody] SongDTO song)
         {
             try
             {
@@ -98,6 +104,7 @@ namespace MusicLibraryWebAPI.Controllers
                     songInDb.Title = song.Title;
                     songInDb.ReleaseDate = song.ReleaseDate;
                     songInDb.Artist = song.Artist;
+                    song.Likes = songInDb.Likes;
                     _context.Update(songInDb);
                     _context.SaveChanges();
                     return StatusCode(200, song);
@@ -118,7 +125,7 @@ namespace MusicLibraryWebAPI.Controllers
                 var songToDelete = _context.Songs.Where(s => s.Id == id).FirstOrDefault();
                 if (songToDelete != null)
                 {
-                    Song copyOfSong = new Song { Id = songToDelete.Id, Album = songToDelete.Album, Artist = songToDelete.Artist, Title = songToDelete.Title };
+                    SongDTO copyOfSong = new SongDTO { Id = songToDelete.Id, Album = songToDelete.Album, Artist = songToDelete.Artist, Title = songToDelete.Title };
                     _context.Remove(songToDelete);
                     _context.SaveChanges();
                     return StatusCode(200, copyOfSong);
@@ -126,6 +133,31 @@ namespace MusicLibraryWebAPI.Controllers
                 else
                 {
                     return StatusCode(400);
+                }
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+        // PUT api/<MusicController>/5
+        [HttpPut("{id}/LikeSong")]
+        public IActionResult AddLike(int id)
+        {
+            try
+            {
+                Song song = _context.Songs.Where(s => s.Id == id).FirstOrDefault();
+                if (song == null)
+                {
+                    return BadRequest();
+                }
+                else
+                {
+                    song.Likes += 1;
+                    _context.Update(song);
+                    _context.SaveChanges();
+                    SongDTO returnVal = new SongDTO() { Title = song.Title, Album = song.Album, Artist = song.Artist, ReleaseDate = song.ReleaseDate, Likes = song.Likes };
+                    return StatusCode(200, returnVal);
                 }
             }
             catch
