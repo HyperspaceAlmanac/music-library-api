@@ -105,6 +105,7 @@ namespace MusicLibraryWebAPI.Controllers
                     songInDb.ReleaseDate = song.ReleaseDate;
                     songInDb.Artist = song.Artist;
                     song.Likes = songInDb.Likes;
+                    song.Id = id;
                     _context.Update(songInDb);
                     _context.SaveChanges();
                     return StatusCode(200, song);
