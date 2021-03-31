@@ -100,16 +100,27 @@ namespace MusicLibraryWebAPI.Controllers
                 }
                 else
                 {
-                    songInDb.Album = song.Album;
-                    songInDb.Title = song.Title;
-                    songInDb.ReleaseDate = song.ReleaseDate;
-                    songInDb.Artist = song.Artist;
-                    song.Likes = songInDb.Likes;
+                    if (song.Album != null)
+                    {
+                        songInDb.Album = song.Album;
+                    }
+                    if (song.Title != null)
+                    {
+                        songInDb.Title = song.Title;
+                    }
+                    if (song.ReleaseDate != new DateTime())
+                    {
+                        songInDb.ReleaseDate = song.ReleaseDate;
+                    }
+                    if (song.Artist != null)
+                    {
+                        songInDb.Artist = song.Artist;
+                    }
                     _context.Update(songInDb);
                     _context.SaveChanges();
-                    song.Id = id;
-                    song.Likes = songInDb.Likes;
-                    return StatusCode(200, song);
+                    SongDTO updatedSong = new SongDTO() { Id = id, Title = songInDb.Title, Album = songInDb.Album, Artist = songInDb.Artist,
+                        ReleaseDate = songInDb.ReleaseDate, Likes = songInDb.Likes };
+                    return StatusCode(200, updatedSong);
                 }
             }
             catch
