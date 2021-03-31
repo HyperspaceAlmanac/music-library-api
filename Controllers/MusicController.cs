@@ -105,9 +105,10 @@ namespace MusicLibraryWebAPI.Controllers
                     songInDb.ReleaseDate = song.ReleaseDate;
                     songInDb.Artist = song.Artist;
                     song.Likes = songInDb.Likes;
-                    song.Id = id;
                     _context.Update(songInDb);
                     _context.SaveChanges();
+                    song.Id = id;
+                    song.Likes = songInDb.Likes;
                     return StatusCode(200, song);
                 }
             }
@@ -126,7 +127,9 @@ namespace MusicLibraryWebAPI.Controllers
                 var songToDelete = _context.Songs.Where(s => s.Id == id).FirstOrDefault();
                 if (songToDelete != null)
                 {
-                    SongDTO copyOfSong = new SongDTO { Id = songToDelete.Id, Album = songToDelete.Album, Artist = songToDelete.Artist, Title = songToDelete.Title };
+                    SongDTO copyOfSong = new SongDTO { Id = songToDelete.Id, Album = songToDelete.Album,
+                        Artist = songToDelete.Artist, Title = songToDelete.Title,
+                        ReleaseDate = songToDelete.ReleaseDate, Likes = songToDelete.Likes };
                     _context.Remove(songToDelete);
                     _context.SaveChanges();
                     return StatusCode(200, copyOfSong);
