@@ -141,7 +141,7 @@ namespace MusicLibraryWebAPI.Controllers
             }
         }
         // PUT api/<MusicController>/5
-        [HttpPut("{id}/LikeSong")]
+        [HttpPut("{id}/Like")]
         public IActionResult AddLike(int id)
         {
             try
@@ -156,7 +156,7 @@ namespace MusicLibraryWebAPI.Controllers
                     song.Likes += 1;
                     _context.Update(song);
                     _context.SaveChanges();
-                    SongDTO returnVal = new SongDTO() { Title = song.Title, Album = song.Album, Artist = song.Artist, ReleaseDate = song.ReleaseDate, Likes = song.Likes };
+                    SongDTO returnVal = new SongDTO() { Id = song.Id, Title = song.Title, Album = song.Album, Artist = song.Artist, ReleaseDate = song.ReleaseDate, Likes = song.Likes };
                     return StatusCode(200, returnVal);
                 }
             }
